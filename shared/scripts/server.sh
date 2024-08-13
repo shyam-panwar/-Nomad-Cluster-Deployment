@@ -23,7 +23,9 @@ NOMAD_BINARY=$4
 case $CLOUD in
   aws)
     echo "CLOUD_ENV: aws"
-    IP_ADDRESS=$(curl http://instance-data/latest/meta-data/local-ipv4)
+    TOKEN=$(curl -X PUT "http://instance-data/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+
+    IP_ADDRESS=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" http://instance-data/latest/meta-data/local-ipv4)
     ;;
   gce)
     echo "CLOUD_ENV: gce"
