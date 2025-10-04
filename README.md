@@ -1,7 +1,7 @@
 <<<<<<< HEAD
 # Set up a Nomad cluster on the major cloud platforms
 
-This repo is a companion to the [Cluster Setup](https://developer.hashicorp.com/nomad/tutorials/cluster-setup) collection of tutorials, containing configuration files to create a Nomad cluster with ACLs enabled on AWS, GCP, and Azure.
+This repo is a companion to the [Cluster Setup](https://developer.hashicorp.com/nomad/tutorials/cluster-setup) collection of tutorials, containing configuration files to create a Nomad cluster with ACLs enabled on GCP.
 
 
 # Nomad GCP Cluster Deployment
@@ -49,7 +49,7 @@ This repository contains all necessary scripts, Terraform code, and Nomad job fi
 ```bash
 cd gcp
 terraform init
-terraform apply -auto-approve
+terraform apply -var-file="variables.hcl"
 =======
 # -Nomad-Cluster-Deployment
 >>>>>>> 1cda924410523e327f9e7f3e630273a94689d59b
