@@ -50,8 +50,7 @@ This repository contains all necessary scripts, Terraform code, and Nomad job fi
 cd gcp
 terraform init
 terraform apply -var-file="variables.hcl"
-nomad_ui = 35.193.143.48:4646  # add Port[4646] at last
-nomad status
+nomad_ui = 35.193.143.48:4646  # add Port[4646] at last, otherwise it will not load.
 Secret_id = 96f7ba53-8982-51f3-1133-5c3318bafac2
 =======
 # -Nomad-Cluster-Deployment
