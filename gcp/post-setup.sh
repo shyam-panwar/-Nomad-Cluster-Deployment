@@ -1,4 +1,4 @@
-#!/bin/bash
+ #!/bin/bash
 
 NOMAD_USER_TOKEN_FILENAME="nomad.token"
 LB_ADDRESS=$(terraform output -raw lb_address_consul_nomad)
@@ -29,3 +29,53 @@ if [ ! -f $NOMAD_USER_TOKEN_FILENAME ]; then
 else 
     echo -e "\n***\nThe $NOMAD_USER_TOKEN_FILENAME file already exists - not overwriting. If this is a new run, delete it first.\n***"
 fi
+
+echo -e "\nPost-setup script complete."
+# End of script
+
+
+# -----------------------------
+# Secure Nomad UI with NGINX + Basic Auth
+# -----------------------------
+
+echo -e "\nSetting up NGINX reverse proxy with Basic Auth for Nomad UI...\n"
+
+# Install nginx and htpasswd tool
+sudo apt-get update -y && sudo apt-get install -y nginx apache2-utils
+
+# Create Basic Auth credentials (user: admin / password: StrongPass123)
+if [ ! -f /etc/nginx/.htpasswd ]; then
+    sudo htpasswd -bc /etc/nginx/.htpasswd admin StrongPass123
+    echo "Basic Auth user 'admin' created with password 'StrongPass123'"
+else
+    echo "Basic Auth credentials already exist, skipping..."
+fi
+
+# Configure NGINX reverse proxy
+sudo tee /etc/nginx/sites-available/nomad.conf > /dev/null <<EOL
+server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://127.0.0.1:4646;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+
+        auth_basic "Restricted Nomad UI";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+    }
+}
+EOL
+
+# Enable config and restart nginx
+sudo ln -sf /etc/nginx/sites-available/nomad.conf /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl restart nginx
+
+echo -e "\n✅ Nomad UI is now protected:\n"
+echo "👉 Access via: http://$LB_ADDRESS/"
+echo "👉 Login with Basic Auth: admin / StrongPass123"
+echo "👉 Then use your Nomad ACL Token from nomad.token"
+
+
+

@@ -13,6 +13,10 @@ client {
 
 acl {
   enabled = true
+  token_ttl = "30m"
+  token_max_ttl = "30m"
+  default_policy = "deny"
+  enable_token_persistence = true
 }
 
 consul {

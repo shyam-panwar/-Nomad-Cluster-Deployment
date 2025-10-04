@@ -10,3 +10,6 @@ namespace "*" {
     policy = "read" 
     capabilities = ["submit-job", "dispatch-job", "read-logs", "read-fs", "alloc-exec"]
 }
+Operations { 
+    policy = "read" 
+}

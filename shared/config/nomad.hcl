@@ -3,8 +3,9 @@ bind_addr = "0.0.0.0"
 
 # Enable the server
 server {
-  enabled          = true
-  bootstrap_expect = SERVER_COUNT
+  enabled  = true
+  # bootstrap_expect = SERVER_COUNT
+  bootstrap_expect = 1
 }
 
 consul {
@@ -14,6 +15,10 @@ consul {
 
 acl {
   enabled = true
+  token_ttl = "30m"
+  token_max_ttl = "30m"
+  default_policy = "deny"
+  enable_token_persistence = true
 }
 
 vault {
@@ -22,4 +27,9 @@ vault {
   task_token_ttl   = "1h"
   create_from_role = "nomad-cluster"
   token            = ""
+}
+
+ui {
+  enabled = true
+  http = "127.0.0.1:4646"
 }

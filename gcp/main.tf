@@ -1,8 +1,8 @@
-provider "google" {
-  project = var.project
-  region  = var.region
-  zone    = var.zone
-}
+# provider "google" {
+#   project = var.project
+#   region  = var.region
+#   zone    = var.zone
+# }
 
 resource "google_compute_network" "hashistack" {
   name = "hashistack-${var.name_prefix}"
@@ -70,8 +70,8 @@ resource "google_compute_firewall" "clients_ingress" {
   # nginx example; replace with your application port
   allow {
     protocol = "tcp"
-    ports    = [80]
-  }
+    ports    = [4646]
+ }
 }
 
 resource "random_uuid" "nomad_id" {
@@ -108,6 +108,7 @@ resource "google_compute_instance" "server" {
     scopes = [
       "https://www.googleapis.com/auth/compute.readonly",
       "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/cloud-platform"
     ]
   }
 
@@ -160,6 +161,15 @@ resource "google_compute_instance" "client" {
     nomad_binary              = var.nomad_binary
     nomad_consul_token_secret = random_uuid.nomad_token.result
   })
+}
+
+resource "google_compute_subnetwork" "proxy_only" {
+  name          = "${var.name_prefix}-proxy-only"
+  ip_cidr_range = "10.0.0.0/24" # Use a range not overlapping with your other subnets
+  region        = var.region
+  network       = google_compute_network.hashistack.id
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  role          = "ACTIVE"
 }
 
 locals {

@@ -7,3 +7,9 @@ terraform {
     }
   }
 }
+
+provider "google" {
+  project = "nomad-cluster-project"
+  region  = "us-central1"
+  zone    = "us-central1-c"
+}
